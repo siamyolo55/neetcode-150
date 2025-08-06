@@ -15,50 +15,37 @@ class Solution {
             || diagVisLeft.find(r - c) != diagVisLeft.end();
     }
 
-    void dfs(int r, int c, int count, int &n, vector<string> &grid){
-        if (count == n){
-            // base case
+    void dfs(int r, int &n, vector<string> &grid){
+        if (r == n){
             ans.push_back(grid);
             return;
         }
 
-        if (r == n){
-            return;
+        for (int c = 0 ; c < n ; c++){
+            if (isInvalidSpotForQueen(r, c)){
+                continue;
+            }
+
+            grid[r][c] = 'Q';
+            rowVis.insert(r);
+            colVis.insert(c);
+            diagVisRight.insert(r + c);
+            diagVisLeft.insert(r - c);
+
+            dfs(r + 1, n, grid);
+
+            grid[r][c] = '.';
+            rowVis.erase(r);
+            colVis.erase(c);
+            diagVisRight.erase(r + c);
+            diagVisLeft.erase(r - c);
         }
-
-        if (c == n){
-            return;
-        }
-
-        if (isInvalidSpotForQueen(r, c)){
-            dfs(r, c + 1, count, n, grid);
-            return;
-        }
-        
-        grid[r][c] = 'Q';
-        rowVis.insert(r);
-        colVis.insert(c);
-        diagVisRight.insert(r + c);
-        diagVisLeft.insert(r - c);
-        count++;
-
-        dfs(r + 1, 0, count, n, grid);
-
-        grid[r][c] = '.';
-        rowVis.erase(r);
-        colVis.erase(c);
-        diagVisRight.erase(r + c);
-        diagVisLeft.erase(r - c);
-        count--;
-
-        dfs(r, c + 1, count, n, grid);
     }
 
 public:
     vector<vector<string>> solveNQueens(int n) {
         vector<string> grid(n, string(n, '.'));
-
-        dfs(0, 0, 0, n, grid);
+        dfs(0, n, grid);
 
         return ans;
     }
